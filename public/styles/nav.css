@@ -1,0 +1,47 @@
+nav {
+  background-color: #00a087;
+  position: fixed;
+  height: 80px;
+  width: 100%;
+  color: #e8fdff;
+  top: 0;
+  left: 0;
+  padding-left: 2em;
+  padding-right: 2em;
+  float: left;
+  z-index: 4;
+}
+
+#compose {
+  margin-top: 0.4em;
+  color: #00a087;
+  text-align: center;
+  padding-top: 0.4em;
+  float:right;
+  height: 60px;
+  width: 140px;
+  background-color: white;
+  font-weight: bold;
+  border: solid grey 1px;
+  border-radius: 5px;
+  font-size: 1.8em;
+  opacity: 0.90;
+}
+#compose:hover {
+  opacity: 1;
+  border-color: black;
+}
+
+#nav-bar .logo {
+  width: 80px;
+  height: 80px;
+  margin-right: 10px;
+}
+
+#nav-bar .header {
+  font-weight: bold;
+  position: absolute;
+  top: 20px;
+  font-size: 3em;
+}
+
