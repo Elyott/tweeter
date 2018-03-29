@@ -13,43 +13,10 @@ $( "#compose" ).click(function() {
 
 $('.new-tweet form').on('submit', function(event){
   event.preventDefault();
-
-  let counter = ($(event.target).children('#new_tweet_text').val()).length
-  let warning = $('.container .warning');
-
-  if(counter === 0){
-    warning.text('Please Enter A Message!')
-    warning.removeClass('opaque');
-    setTimeout(function(){warning.addClass('opaque')}, 1400);
-  }else if(counter > 140){
-    warning.text('You Are Too Verbose!')
-    warning.removeClass('opaque');
-    setTimeout(function(){warning.addClass('opaque')}, 1400);
-  }else if(counter <= 140){
-    warning.addClass('opaque');
-    let text = $('#new_tweet_text').serialize();
-    $.ajax({
-      url: '/tweets',
-      method: 'POST',
-      data: text,
-      complete: function(){
-        // $('#tweets').empty();
-        // loadTweets();
-
-        $.get('/tweets').done(function(tweets) {
-          let latestTweet = tweets[(tweets.length - 1)];
-          var $tweet = createTweetElement(latestTweet);
-          $('#tweets').prepend($tweet);
-        });
-      }
-
-    })
-
+  if(checkCounter()){
+    addNewTweet();
+    resetTextAndCounter();
   }
-  $('#new_tweet_text').val('');
-  $('.counter').text(140);
-
-
 });
 
 function renderTweets(tweetData){
@@ -60,6 +27,7 @@ function renderTweets(tweetData){
 }
 
 function createTweetElement(tweet){
+  //Creates new tweet article
   var $tweet = $('<article>').addClass('tweet');
 
   //Header
@@ -92,18 +60,49 @@ function loadTweets(){
   $.get('/tweets').done(function(tweets) {
     renderTweets(tweets.reverse());
   });
+}
 
+function addNewTweet(){
+  let text = $('#new_tweet_text').serialize();
+  $.ajax({
+    url: '/tweets',
+    method: 'POST',
+    data: text,
+    complete: loadNewTweet()
+  })
+}
 
-  //   $.ajax({
-  //   url: '/tweets',
-  //   method: 'GET',
-  //   load: function(tweets){
-  //     renderTweets(tweets);
-  //   }
-  // })
+function loadNewTweet(){
+  $.get('/tweets').done(function(tweets) {
+    let latestTweet = tweets[(tweets.length - 1)];
+    var $tweet = createTweetElement(latestTweet);
+    $('#tweets').prepend($tweet);
+  });
+}
+
+function checkCounter(){
+  let counter = ($(event.target).children('#new_tweet_text').val()).length
+  let warning = $('.container .warning');
+  if(counter === 0){
+    warning.text('Please Enter A Message!')
+    warning.removeClass('opaque');
+    setTimeout(function(){warning.addClass('opaque')}, 1400);
+    return false;
+  }else if(counter > 140){
+    warning.text('You Are Too Verbose!')
+    warning.removeClass('opaque');
+    setTimeout(function(){warning.addClass('opaque')}, 1400);
+    return false;
+  }else{
+    return true;
+  }
+}
+
+function resetTextAndCounter(){
+  $('#new_tweet_text').val('');
+  $('.counter').text(140);
 }
 
 loadTweets();
-// renderTweets(data);
 
 });

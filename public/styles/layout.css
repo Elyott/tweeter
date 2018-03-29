@@ -98,8 +98,9 @@ input{
 }
 
 #tweets h3{
+  display: inline;
   float: left;
-  font-size: 1.5em;
+  font-size: 1.4em;
 }
 #tweets .userPhoto{
   width: 70px;
@@ -111,10 +112,12 @@ input{
 }
 
 #tweets .userHandle{
+  font-size: 0.9em;
   float: right;
 }
 
 #tweets .tweetText{
+  word-break: break-word;
   margin: 0;
   min-height: 100px;
   padding: 1em;
