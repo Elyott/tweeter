@@ -5,63 +5,83 @@
  */
 $(document).ready(function(){
 
-$( "#compose" ).click(function() {
-  $(".new-tweet").slideToggle( "slow", function() {
+//toggles compose field
+$( '#compose' ).click(function() {
+  $('.new-tweet').slideToggle('slow', function() {
     $('#new_tweet_text').focus();
   });
 });
 
+//creates a new tweet
 $('.new-tweet form').on('submit', function(event){
   event.preventDefault();
-  if(checkCounter()){
-    addNewTweet();
-    resetTextAndCounter();
+  if(checkCounter()){ //checks to make sure there is a message and it is less then max character limit
+    addNewTweet(); //creates new tweet and loads it
+    resetTextAndCounter(); //resets test field and counter
   }
 });
 
+//adds each tweet to the page
 function renderTweets(tweetData){
   tweetData.forEach(function(tweet){
-    var $tweet = createTweetElement(tweet);
+    let $tweet = createTweetElement(tweet);
     $('#tweets').append($tweet);
   });
 }
 
 function createTweetElement(tweet){
   //Creates new tweet article
-  var $tweet = $('<article>').addClass('tweet');
+  let $tweet = $('<article>').addClass('tweet');
 
   //Header
-  var $header = $('<header>');
-  var $userHandle = $('<p>').addClass('userHandle').append(tweet.user.handle);
-  var $userImg = $('<img>').addClass('userPhoto').attr('src', tweet.user.avatars.small);
-  var $userName = $('<h3>').append(tweet.user.name);
-  $($header).append($userHandle);
-  $($header).append($userImg);
-  $($header).append($userName);
+  let $header = $('<header>');
+  let $userHandle = $('<p>').addClass('userHandle').append(tweet.user.handle);
+  let $userImg = $('<img>').addClass('userPhoto').attr('src', tweet.user.avatars.small);
+  let $userName = $('<h3>').append(tweet.user.name);
+  $($header).append($userHandle).append($userImg).append($userName);
   $($tweet).append($header);
 
   // Tweet Text
-  var $tweetTextContent = $('<p>').addClass('tweetText').text(tweet.content.text);
+  let $tweetTextContent = $('<p>').addClass('tweetText').text(tweet.content.text);
   $($tweet).append($tweetTextContent);
 
   //Footer
-  var $footer = $('<footer>');
-  var $sharebuttons = $('<p>').addClass('shareButtons').text('buttons');
-  var date = new Date(tweet.created_at);
-  var $createdAt = $('<p>').append(date);
-  $($footer).append($sharebuttons);
-  $($footer).append($createdAt);
+  let $footer = $('<footer>');
+  let $flagbuttons = $('<i>').addClass('shareButtons').addClass('fas fa-flag');
+  let $retweetbuttons = $('<i>').addClass('shareButtons').addClass('fas fa-retweet');
+  let $heartbuttons = $('<i>').addClass('shareButtons').addClass('fas fa-heart');
+  let $createdAt = $('<p>').append(timeSinceCreation(tweet.created_at));
+  $($footer).append($heartbuttons).append($retweetbuttons).append($flagbuttons).append($createdAt);
   $($tweet).append($footer);
 
   return $tweet;
 }
 
+//calculates the time since the tweet was created and
+// returns it in a specific format depending on amount of time passed
+function timeSinceCreation(timeTweetWasCreated){
+  let minutesSinceCreated = Math.round(((Date.now() - timeTweetWasCreated)/60000))
+  let timeSince = '';
+  if(minutesSinceCreated < 60){
+    timeSince = `${minutesSinceCreated} minutes ago`;
+  }else if(minutesSinceCreated < 120 ){
+    timeSince = `${Math.round(minutesSinceCreated/60)} hour ago`;
+  } else if(minutesSinceCreated < 3600){
+    timeSince = `${Math.round(minutesSinceCreated/60)} hours ago`;
+  } else {
+    timeSince = `${Math.round(minutesSinceCreated/3600)} days ago`;
+  }
+  return timeSince
+}
+
+//loads all tweets
 function loadTweets(){
   $.get('/tweets').done(function(tweets) {
     renderTweets(tweets.reverse());
   });
 }
 
+//creates a new text then loads it on the top of the list
 function addNewTweet(){
   let text = $('#new_tweet_text').serialize();
   $.ajax({
@@ -72,14 +92,16 @@ function addNewTweet(){
   })
 }
 
+//loads newly created tweet to the top of the list
 function loadNewTweet(){
   $.get('/tweets').done(function(tweets) {
     let latestTweet = tweets[(tweets.length - 1)];
-    var $tweet = createTweetElement(latestTweet);
+    let $tweet = createTweetElement(latestTweet);
     $('#tweets').prepend($tweet);
   });
 }
 
+//checks to make sure there is a message and that it is less than or equal to 140 characters
 function checkCounter(){
   let counter = ($(event.target).children('#new_tweet_text').val()).length
   let warning = $('.container .warning');
@@ -98,6 +120,7 @@ function checkCounter(){
   }
 }
 
+//resets text field and counter
 function resetTextAndCounter(){
   $('#new_tweet_text').val('');
   $('.counter').text(140);
